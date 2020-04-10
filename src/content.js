@@ -11,7 +11,7 @@ class Page {
    }
 
    static isJupyterNotebook() {
-      return document.title.includes('Jupyter Notebook') && this.getNotebookName();
+      return document.title.includes('Jupyter Notebook') && !!this.getNotebookName();
    }
 
    static getNotebookName() {
@@ -180,6 +180,9 @@ class Page {
       return hours + ':' + minutes + ':' + seconds;
    }
 
+   notifyPopup() {
+      chrome.runtime.sendMessage({ payload: Page.isJupyterNotebook() })
+   }
    
 }
 
@@ -187,8 +190,8 @@ function main() {
    if (!Page.isJupyterNotebook()) {
       return;
    }
-   console.log('Jupyter Notebook envoirement detected')
    const currentPage = new Page();
+   currentPage.notifyPopup();
    currentPage.initObservers();
 }
 
