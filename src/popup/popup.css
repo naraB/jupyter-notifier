@@ -28,7 +28,7 @@
     font-weight: lighter;
   } */
 
-p {
+p, span {
     font-size: 14px;
 }
 
@@ -164,10 +164,6 @@ input::-webkit-inner-spin-button {
 
 .padding-top-bottom {
     padding: 30px 0px;
-}
-
-.secondary-padding-top-bottom {
-    padding: 25px 0;
 }
 
 .icon {

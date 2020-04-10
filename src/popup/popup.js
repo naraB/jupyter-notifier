@@ -7,7 +7,6 @@ class Popup {
     notifySound;
     notifyMessage;
 
-
     constructor(){}
 
     onInit() {
@@ -27,7 +26,7 @@ class Popup {
         this.notifyMessage = await this.getValueFromStorage('notifyMessage');
         this.updateView(this.notifySound, this.notifyMessage);
     }
-    
+
     updateView(notifySound, notifyMessage) {
         $('#notifySound').prop('checked', notifySound);
         $('#notifyMessage').prop('checked', notifyMessage);
