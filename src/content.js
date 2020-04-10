@@ -92,8 +92,10 @@ class Page {
       const notifyIcon = document.getElementById('jupyter-notifier-icon');
       if (this.isSelectedCellNotified()) {
          notifyIcon.className = 'fa fa-bell';
+         this.addNotfiyIndicator();
       } else {
          notifyIcon.className = 'fa fa-bell-slash';
+         this.removeNotifyIndicator();
       }
    }
 
@@ -122,6 +124,35 @@ class Page {
                            <i id="jupyter-notifier-icon" class="fa fa-bell-slash"></i> \
                         </button> \
                </div>';
+   }
+
+   addNotfiyIndicator() {
+      const child = this.selectedCell.getElementsByClassName('prompt input_prompt')[0];
+      const parent = this.selectedCell.getElementsByClassName('prompt_container')[0];
+      const wrapper = document.createElement('div');
+      wrapper.style.display = 'flex';
+      wrapper.style.flexDirection = 'column';
+      wrapper.style.alignItems = 'center';
+      wrapper.className = 'jupyter-notifier-icon-identifier-wrapper';
+
+      parent.replaceChild(wrapper, child);
+      wrapper.appendChild(child);
+      wrapper.insertAdjacentHTML('beforeend', this.getNotifyIndicator());
+   }
+
+   removeNotifyIndicator() {
+      const child = this.selectedCell.getElementsByClassName('prompt input_prompt')[0];
+      const parent = this.selectedCell.getElementsByClassName('prompt_container')[0];
+      const indicator = this.selectedCell.getElementsByClassName('jupyter-notifier-bell-indicator')[0];
+      const indicatorWrapper = this.selectedCell.getElementsByClassName('jupyter-notifier-icon-identifier-wrapper')[0];
+      // Remove indicator since it's a child
+      indicator.remove();
+      parent.insertBefore(child, indicatorWrapper);
+      indicatorWrapper.remove();
+   }
+
+   getNotifyIndicator() {
+      return '<i style="opacity: 0.2;" class="jupyter-notifier-bell-indicator fa fa-bell"></i>'
    }
 
    msToTime(duration) {
