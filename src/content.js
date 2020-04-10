@@ -8,7 +8,6 @@ class Page {
    constructor() {
       this.codeCells = this.getInitialCodeCells();
       this.selectedCell = this.getSelectedCell();
-      console.log('selected cell', this.selectedCell);
       this.injectButton();
    }
 
@@ -138,6 +137,10 @@ class Page {
       seconds = (seconds < 10) ? '0' + seconds : seconds;
 
       return hours + ':' + minutes + ':' + seconds;
+   }
+
+   getNotebookName() {
+      return document.getElementById('notebook_name').innerText;
    }
 }
 
