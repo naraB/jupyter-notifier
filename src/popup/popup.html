@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="popup.css" media="screen" />
+    <script src="../assets/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="popup.js"></script>
+</head>
+
+<body class="main-width">
+    <div class="flex-column">
+        <div class="border-bottom">
+            <div class="flex main-padding align-items-center">
+                <img src="../assets/icons/notifications-24px.svg" class="timer-icon">
+                <h2>jupyter notifier</h2>
+            </div>
+        </div>
+        <div class="secondary-padding">
+            <div class="border-bottom padding-top-bottom flex justify-content-space-between align-items-center">
+                <p class="flex-2">Notify me with a <span id="playSound" class="bold cursor-pointer">sound</span></p>
+                <div class="flex-1 flex justify-content-center">
+                    <label class="switch">
+                        <input id="notifySound" type="checkbox">
+                        <span class="slider "></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="secondary-padding border-bottom">
+            <div class="padding-top-bottom flex justify-content-space-between align-items-center">
+                <p class="flex-2">Notify me with a <span id="showMessage" class="bold cursor-pointer">message</span></p>
+                <div class="flex-1 flex justify-content-center">
+                    <label class="switch">
+                        <input id="notifyMessage" type="checkbox">
+                        <span class="slider "></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="secondary-padding">
+            <div class="border-bottom secondary-padding-top-bottom flex  align-items-center">
+                <p> Current tab is a <span class="bold">Jupyter Notebook </span></p>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>
