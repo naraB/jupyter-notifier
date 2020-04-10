@@ -1,27 +1,45 @@
 class Page {
    codeCells;
-   static injectButton = this.getInjectButton();
+   // From local storage??
+   notifyCells = [];
+   selectedCell;
 
    constructor() {
       this.codeCells = this.getInitialCodeCells();
-      this.injectButtons();
+      this.selectedCell = this.getSelectedCell();
+      this.injectButton();
    }
 
-   initCellObserver() {
+   initObservers() {
+      this.initNewCellObserver();
+      this.initSelectedCellObserver();
+   }
+
+   initNewCellObserver() {
       new MutationObserver((mutations) => {
          for (let mutation of mutations) {
             const target = mutation.target;
             if (target.className && target.className.includes('cell code_cell') && !this.codeCells.includes(target)) {
                this.codeCells.push(target);
-               console.log(this.codeCells);
-               // call btn
             }
          }
-      }).observe(document.body, { attributes: true, hildList: true, subtree: true });
+      }).observe(document.body, { attributes: true, childList: true, subtree: true });
+   }
+
+   initSelectedCellObserver() {
+      new MutationObserver((mutations) => {
+         for (let mutation of mutations) {
+            const target = mutation.target;
+            if (target.className && target.className.includes('selected') && !target.className.includes('unselected') && this.selectedCell !== target) {
+               this.selectedCell = target;
+               this.toggleButton();
+            }
+         }
+      }).observe(document.getElementById('notebook'), { attributes: true, childList: true, subtree: true});
    }
 
 
-   isJupyterNotebook() {
+   static isJupyterNotebook() {
       return true;
    }
 
@@ -29,27 +47,54 @@ class Page {
       return Array.from(document.getElementsByClassName('cell code_cell'));
    }
 
-   getCodeCells() {
-      return this.codeCells;
+   injectButton() {
+      const toolbar = document.getElementById('maintoolbar-container');
+      toolbar.insertAdjacentHTML('beforeend', this.getNotifyButton());
+      this.addNotifyEventListener();
    }
 
-   injectButtons() {
-      for(let i = 0; i < this.codeCells.length; i++) {
-         let inputElement = this.codeCells[i].firstChild;
-         inputElement.insertAdjacentHTML('afterbegin', Page.injectButton);   
+   toggleButton() {
+      const notifyButton = document.getElementById('notify-me');
+      if (this.isSelectedCellNotified()) {
+         // TODO toggle icons instead of text
+         notifyButton.innerText = 'S';
+      } else {
+         notifyButton.innerText = 'U';
       }
    }
 
-   static getInjectButton() {
-      return '<div style="display: flex; justify-content: center; align-items: center;"> \
-            <button id="notify-me">Click</button> \
-            </div>'
+   addNotifyEventListener() {
+      document.getElementById('notify-me').addEventListener('click', (e) => {
+         if (this.isSelectedCellNotified()) {
+            this.notifyCells.splice(this.notifyCells.indexOf(this.selectedCell), 1);
+         } else {
+            this.notifyCells.push(this.selectedCell);
+         }
+         this.toggleButton();
+      });
+   }
+
+   isSelectedCellNotified() {
+      return this.notifyCells.includes(this.selectedCell);
+   }
+
+   getSelectedCell() {
+      return document.getElementsByClassName('selected');
+   }
+
+   getNotifyButton() {
+      return '<div class="btn-group jupyter-notifier"> \
+                        <button id="notify-me" class="btn btn-default notify-me" title="notify me when cells terminates">U</button> \
+                     </div>';
    }
 }
 
-async function main() {
+function main() {
+   if (!Page.isJupyterNotebook()) {
+      return;
+   }
    const currentPage = new Page();
-   currentPage.initCellObserver();
+   currentPage.initObservers();
 }
 
 main();
