@@ -75,7 +75,7 @@ class Page {
 
 
    static isJupyterNotebook() {
-      return true;
+      return document.title.includes('Jupyter Notebook');
    }
 
    getInitialCodeCells() {
@@ -88,14 +88,16 @@ class Page {
       this.addNotifyEventListener();
    }
 
+   selectedCellContainsNotifyIndicator() {
+      return !!this.selectedCell.getElementsByClassName('jupyter-notifier-bell-indicator')[0]
+   }
+
    toggleIcon() {
       const notifyIcon = document.getElementById('jupyter-notifier-icon');
       if (this.isSelectedCellNotified()) {
          notifyIcon.className = 'fa fa-bell';
-         this.addNotfiyIndicator();
       } else {
          notifyIcon.className = 'fa fa-bell-slash';
-         this.removeNotifyIndicator();
       }
    }
 
@@ -103,15 +105,17 @@ class Page {
       document.getElementById('jupyter-notifier-btn').addEventListener('click', (e) => {
          if (this.isSelectedCellNotified()) {
             this.notifyCells.splice(this.notifyCells.indexOf(this.selectedCell), 1);
+            this.removeNotifyIndicator();
          } else {
             this.notifyCells.push(this.selectedCell);
+            this.addNotfiyIndicator();
          }
          this.toggleIcon();
       });
    }
 
    isSelectedCellNotified() {
-      return this.notifyCells.includes(this.selectedCell);
+      return this.notifyCells.includes(this.selectedCell) && this.getNotebookName();
    }
 
    getSelectedCell() {
@@ -179,6 +183,7 @@ function main() {
    if (!Page.isJupyterNotebook()) {
       return;
    }
+   console.log('Jupyter Notebook envoirement detected')
    const currentPage = new Page();
    currentPage.initObservers();
 }
