@@ -66,7 +66,6 @@ class Page {
          for (let mutation of mutations) {
             const target = mutation.target;
             if (target.className && !target.className.includes('running') && this.runningCellQueue.some(cell => cell.element === target)) {
-               terminatedCell.observer.disconnect();
                const terminatedCell = this.runningCellQueue.shift();
                this.notifyCells.splice(this.notifyCells.indexOf(terminatedCell.element), 1);
                // Next cell runs after completion of previous
@@ -74,7 +73,9 @@ class Page {
                   this.runningCellQueue[0].startTime = new Date();
                }
                this.removeNotifyIndicator(terminatedCell.element);
-               console.log("cell finished running. runtime: ", this.msToTime(new Date() - terminatedCell.startTime));
+               const runtime = this.msToTime(new Date() - terminatedCell.startTime);
+               chrome.runtime.sendMessage({event: 'cell-terminated', runtime});
+               terminatedCell.observer.disconnect();
             }
          }
       });
