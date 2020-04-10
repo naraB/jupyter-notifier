@@ -35,7 +35,7 @@ class Page {
             const target = mutation.target;
             if (target.className && target.className.includes('selected') && !target.className.includes('unselected') && this.selectedCell !== target) {
                this.selectedCell = target;
-               this.toggleButton();
+               this.toggleIcon();
             }
          }
       }).observe(document.getElementById('notebook'), { attributes: true, childList: true, subtree: true });
@@ -89,26 +89,23 @@ class Page {
       this.addNotifyEventListener();
    }
 
-   toggleButton() {
-      const notifyButton = document.getElementById('notify-me');
+   toggleIcon() {
+      const notifyIcon = document.getElementById('jupyter-notifier-icon');
       if (this.isSelectedCellNotified()) {
-         // TODO toggle icons instead of text
-         notifyButton.innerText = 'S';
+         notifyIcon.className = 'fa fa-bell';
       } else {
-         notifyButton.innerText = 'U';
+         notifyIcon.className = 'fa fa-bell-slash';
       }
    }
 
    addNotifyEventListener() {
-      document.getElementById('notify-me').addEventListener('click', (e) => {
+      document.getElementById('jupyter-notifier-btn').addEventListener('click', (e) => {
          if (this.isSelectedCellNotified()) {
             this.notifyCells.splice(this.notifyCells.indexOf(this.selectedCell), 1);
          } else {
             this.notifyCells.push(this.selectedCell);
          }
-         console.log('clicked', this.notifyCells);
-
-         this.toggleButton();
+         this.toggleIcon();
       });
    }
 
@@ -121,16 +118,18 @@ class Page {
    }
 
    getNotifyButton() {
-      return '<div class="btn-group jupyter-notifier"> \
-                        <button id="notify-me" class="btn btn-default notify-me" title="notify me when cells terminates">U</button> \
-                     </div>';
+      return '<div class="btn-group"> \
+                        <button id="jupyter-notifier-btn" class="btn btn-default notify-me" title="notify me when cells terminates"> \
+                           <i id="jupyter-notifier-icon" class="fa fa-bell-slash"></i> \
+                        </button> \
+               </div>';
    }
 
    msToTime(duration) {
       if (!duration) {
          return '42h';
       }
-      let seconds = Math.floor((duration / 1000) % 60);
+      let seconds = Math.round((duration / 1000) % 60);
       let minutes = Math.floor((duration / (1000 * 60)) % 60);
       let hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
 
