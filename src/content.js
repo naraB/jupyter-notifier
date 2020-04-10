@@ -1,6 +1,5 @@
 class Page {
    codeCells;
-   // From local storage??
    notifyCells = [];
    selectedCell;
    runningCellQueue = [];
@@ -9,6 +8,14 @@ class Page {
       this.codeCells = this.getInitialCodeCells();
       this.selectedCell = this.getSelectedCell();
       this.injectButton();
+   }
+
+   static isJupyterNotebook() {
+      return document.title.includes('Jupyter Notebook') && this.getNotebookName();
+   }
+
+   static getNotebookName() {
+      return document.getElementById('notebook_name').innerText;
    }
 
    initObservers() {
@@ -73,11 +80,6 @@ class Page {
       return observer;
    }
 
-
-   static isJupyterNotebook() {
-      return document.title.includes('Jupyter Notebook');
-   }
-
    getInitialCodeCells() {
       return Array.from(document.getElementsByClassName('cell code_cell'));
    }
@@ -89,7 +91,7 @@ class Page {
    }
 
    selectedCellContainsNotifyIndicator() {
-      return !!this.selectedCell.getElementsByClassName('jupyter-notifier-bell-indicator')[0]
+      return !!this.selectedCell.getElementsByClassName('jupyter-notifier-bell-indicator')[0];
    }
 
    toggleIcon() {
@@ -115,29 +117,23 @@ class Page {
    }
 
    isSelectedCellNotified() {
-      return this.notifyCells.includes(this.selectedCell) && this.getNotebookName();
+      return this.notifyCells.includes(this.selectedCell);
    }
 
    getSelectedCell() {
       return Array.from(document.getElementsByClassName('selected'))[0];
    }
 
-   getNotifyButton() {
-      return '<div class="btn-group"> \
-                        <button id="jupyter-notifier-btn" class="btn btn-default notify-me" title="notify me when cells terminates"> \
-                           <i id="jupyter-notifier-icon" class="fa fa-bell-slash"></i> \
-                        </button> \
-               </div>';
-   }
-
    addNotfiyIndicator() {
       const child = this.selectedCell.getElementsByClassName('prompt input_prompt')[0];
       const parent = this.selectedCell.getElementsByClassName('prompt_container')[0];
       const wrapper = document.createElement('div');
+
+      // Add styles
+      wrapper.className = 'jupyter-notifier-icon-identifier-wrapper';
       wrapper.style.display = 'flex';
       wrapper.style.flexDirection = 'column';
       wrapper.style.alignItems = 'center';
-      wrapper.className = 'jupyter-notifier-icon-identifier-wrapper';
 
       parent.replaceChild(wrapper, child);
       wrapper.appendChild(child);
@@ -149,7 +145,7 @@ class Page {
       const parent = this.selectedCell.getElementsByClassName('prompt_container')[0];
       const indicator = this.selectedCell.getElementsByClassName('jupyter-notifier-bell-indicator')[0];
       const indicatorWrapper = this.selectedCell.getElementsByClassName('jupyter-notifier-icon-identifier-wrapper')[0];
-      // Remove indicator since it's a child
+   
       indicator.remove();
       parent.insertBefore(child, indicatorWrapper);
       indicatorWrapper.remove();
@@ -157,6 +153,14 @@ class Page {
 
    getNotifyIndicator() {
       return '<i style="opacity: 0.2;" class="jupyter-notifier-bell-indicator fa fa-bell"></i>'
+   }
+
+   getNotifyButton() {
+      return '<div class="btn-group"> \
+                        <button id="jupyter-notifier-btn" class="btn btn-default notify-me" title="notify me when cells terminates"> \
+                           <i id="jupyter-notifier-icon" class="fa fa-bell-slash"></i> \
+                        </button> \
+               </div>';
    }
 
    msToTime(duration) {
@@ -174,9 +178,7 @@ class Page {
       return hours + ':' + minutes + ':' + seconds;
    }
 
-   getNotebookName() {
-      return document.getElementById('notebook_name').innerText;
-   }
+   
 }
 
 function main() {
