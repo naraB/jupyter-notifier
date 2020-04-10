@@ -66,12 +66,14 @@ class Page {
          for (let mutation of mutations) {
             const target = mutation.target;
             if (target.className && !target.className.includes('running') && this.runningCellQueue.some(cell => cell.element === target)) {
+               terminatedCell.observer.disconnect();
                const terminatedCell = this.runningCellQueue.shift();
+               this.notifyCells.splice(this.notifyCells.indexOf(terminatedCell.element), 1);
                // Next cell runs after completion of previous
                if (this.runningCellQueue[0]) {
                   this.runningCellQueue[0].startTime = new Date();
                }
-               terminatedCell.observer.disconnect();
+               this.removeNotifyIndicator(terminatedCell.element);
                console.log("cell finished running. runtime: ", this.msToTime(new Date() - terminatedCell.startTime));
             }
          }
@@ -140,11 +142,11 @@ class Page {
       wrapper.insertAdjacentHTML('beforeend', this.getNotifyIndicator());
    }
 
-   removeNotifyIndicator() {
-      const child = this.selectedCell.getElementsByClassName('prompt input_prompt')[0];
-      const parent = this.selectedCell.getElementsByClassName('prompt_container')[0];
-      const indicator = this.selectedCell.getElementsByClassName('jupyter-notifier-bell-indicator')[0];
-      const indicatorWrapper = this.selectedCell.getElementsByClassName('jupyter-notifier-icon-identifier-wrapper')[0];
+   removeNotifyIndicator(selectedCell=this.selectedCell) {
+      const child = selectedCell.getElementsByClassName('prompt input_prompt')[0];
+      const parent = selectedCell.getElementsByClassName('prompt_container')[0];
+      const indicator = selectedCell.getElementsByClassName('jupyter-notifier-bell-indicator')[0];
+      const indicatorWrapper = selectedCell.getElementsByClassName('jupyter-notifier-icon-identifier-wrapper')[0];
    
       indicator.remove();
       parent.insertBefore(child, indicatorWrapper);
