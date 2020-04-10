@@ -9,7 +9,7 @@
         "notifications"
     ],
     "web_accessible_resources": [
-        "inject/button.html"
+        "assets/*"
     ],
     "content_scripts": [
         {
@@ -30,6 +30,12 @@
             "background.js"
         ],
         "persistent": false
+    },
+    "icons": {
+        "16": "./assets/icons/pngs/baseline_notifications_black_18dp.png",
+        "48": "./assets/icons/pngs/baseline_notifications_black_48dp.png",
+        "128": "./assets/icons/pngs/baseline_notifications_black_48dp.png"
+
     }
     
 }
