@@ -179,10 +179,6 @@ class Page {
 
       return hours + ':' + minutes + ':' + seconds;
    }
-
-   notifyPopup() {
-      chrome.runtime.sendMessage({ payload: Page.isJupyterNotebook() })
-   }
    
 }
 
@@ -191,7 +187,6 @@ function main() {
       return;
    }
    const currentPage = new Page();
-   currentPage.notifyPopup();
    currentPage.initObservers();
 }
 
