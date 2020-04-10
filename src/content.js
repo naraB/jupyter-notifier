@@ -1,12 +1,13 @@
 class Page {
    codeCells;
+   static injectButton = this.getInjectButton();
 
    constructor() {
       this.codeCells = this.getInitialCodeCells();
-      // call btn
+      this.injectButtons();
    }
 
-   initCellObserser() {
+   initCellObserver() {
       new MutationObserver((mutations) => {
          for (let mutation of mutations) {
             const target = mutation.target;
@@ -32,12 +33,23 @@ class Page {
       return this.codeCells;
    }
 
+   injectButtons() {
+      for(let i = 0; i < this.codeCells.length; i++) {
+         let inputElement = this.codeCells[i].firstChild;
+         inputElement.insertAdjacentHTML('afterbegin', Page.injectButton);   
+      }
+   }
 
+   static getInjectButton() {
+      return '<div style="display: flex; justify-content: center; align-items: center;"> \
+            <button id="notify-me">Click</button> \
+            </div>'
+   }
 }
 
-function main() {
+async function main() {
    const currentPage = new Page();
-   currentPage.initCellObserser();
+   currentPage.initCellObserver();
 }
 
 main();

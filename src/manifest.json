@@ -8,6 +8,9 @@
         "storage",
         "notifications"
     ],
+    "web_accessible_resources": [
+        "inject/button.html"
+    ],
     "content_scripts": [
         {
             "matches": [
@@ -27,8 +30,6 @@
             "background.js"
         ],
         "persistent": false
-    },
-    "web_accessible_resources": [
-        "inject/*"
-    ]
+    }
+    
 }
