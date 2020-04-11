@@ -7,7 +7,7 @@ class Page {
    constructor() {
       this.codeCells = this.getInitialCodeCells();
       this.selectedCell = this.getSelectedCell();
-      this.injectButton();
+      this.toggleButton();
    }
 
    static isJupyterNotebook() {
@@ -41,6 +41,7 @@ class Page {
             const target = mutation.target;
             if (target.className && target.className.includes('selected') && !target.className.includes('unselected') && this.selectedCell !== target) {
                this.selectedCell = target;
+               this.toggleButton();
                this.toggleIcon();
             }
          }
@@ -94,11 +95,29 @@ class Page {
       this.addNotifyEventListener();
    }
 
+   toggleButton() {
+      const codeCell = this.isCodeCell();
+      const buttonInjected = !!document.getElementById('jupyter-notifier-btn-wrapper');
+      if (!codeCell && buttonInjected) {
+         document.getElementById('jupyter-notifier-icon').remove();
+         document.getElementById('jupyter-notifier-btn').remove();
+         document.getElementById('jupyter-notifier-btn-wrapper').remove();
+         return;
+      }
+      if (codeCell && !buttonInjected) {
+         this.injectButton();
+         return;
+      }
+   }
+
    selectedCellContainsNotifyIndicator() {
       return !!this.selectedCell.getElementsByClassName('jupyter-notifier-bell-indicator')[0];
    }
 
    toggleIcon() {
+      if(!this.isCodeCell()) {
+         return;
+      }
       const notifyIcon = document.getElementById('jupyter-notifier-icon');
       if (this.isSelectedCellNotified()) {
          notifyIcon.className = 'fa fa-bell';
@@ -123,6 +142,10 @@ class Page {
 
    isSelectedCellNotified() {
       return this.notifyCells.includes(this.selectedCell);
+   }
+
+   isCodeCell() {
+      return this.selectedCell.className.includes('cell code_cell');
    }
 
    getSelectedCell() {
@@ -161,7 +184,7 @@ class Page {
    }
 
    getNotifyButton() {
-      return '<div class="btn-group"> \
+      return '<div id="jupyter-notifier-btn-wrapper" class="btn-group"> \
                         <button id="jupyter-notifier-btn" class="btn btn-default notify-me" title="notify me when cells terminates"> \
                            <i id="jupyter-notifier-icon" class="fa fa-bell-slash"></i> \
                         </button> \
