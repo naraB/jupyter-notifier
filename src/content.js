@@ -51,8 +51,8 @@ class Page {
       new MutationObserver((mutations) => {
          for (let mutation of mutations) {
             const target = mutation.target;
-            if (target.className && target.className.includes('running') && !this.runningCellQueue.some(cell => cell.element === target) && this.notifyCells.includes(target)) {
-               const terminationObserver = this.initTerminationCellObserver(target);
+            if (target.className && target.className.includes('running') && !this.runningCellQueue.some(cell => cell.element === target)) {
+               const terminationObserver = this.initCellTerminationObserver(target);
                const runningCell = { element: target, startTime: new Date(), observer: terminationObserver };
                this.runningCellQueue.push(runningCell);
             }
@@ -60,20 +60,22 @@ class Page {
       }).observe(document.getElementById('notebook'), { attributes: true, childList: true, subtree: true });
    }
 
-   initTerminationCellObserver(runningCell) {
+   initCellTerminationObserver(runningCell) {
       const observer = new MutationObserver((mutations) => {
          for (let mutation of mutations) {
             const target = mutation.target;
             if (target.className && !target.className.includes('running') && this.runningCellQueue.some(cell => cell.element === target)) {
                const terminatedCell = this.runningCellQueue.shift();
-               this.notifyCells.splice(this.notifyCells.indexOf(terminatedCell.element), 1);
-               // Next cell runs after completion of previous
-               if (this.runningCellQueue[0]) {
-                  this.runningCellQueue[0].startTime = new Date();
+               if (this.notifyCells.includes(terminatedCell.element)) {
+                  this.notifyCells.splice(this.notifyCells.indexOf(terminatedCell.element), 1);
+                  // Next cell runs after completion of previous
+                  if (this.runningCellQueue[0]) {
+                     this.runningCellQueue[0].startTime = new Date();
+                  }
+                  this.removeNotifyIndicator(terminatedCell.element);
+                  const runtime = this.msToTime(new Date() - terminatedCell.startTime);
+                  chrome.runtime.sendMessage({ event: 'cell-terminated', runtime });
                }
-               this.removeNotifyIndicator(terminatedCell.element);
-               const runtime = this.msToTime(new Date() - terminatedCell.startTime);
-               chrome.runtime.sendMessage({ event: 'cell-terminated', runtime });
                terminatedCell.observer.disconnect();
             }
          }
@@ -107,6 +109,7 @@ class Page {
 
    addNotifyEventListener() {
       document.getElementById('jupyter-notifier-btn').addEventListener('click', (e) => {
+         // case: selected file is already running
          if (this.isSelectedCellNotified()) {
             this.notifyCells.splice(this.notifyCells.indexOf(this.selectedCell), 1);
             this.removeNotifyIndicator();
