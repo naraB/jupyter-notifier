@@ -11,11 +11,11 @@ class Page {
    }
 
    static isJupyterNotebook() {
-      return document.title.includes('Jupyter Notebook') && !!this.getNotebookName();
+      return document.title.includes('Jupyter Notebook') && !!Page.getNotebookName();
    }
 
    static getNotebookName() {
-      return document.getElementById('notebook_name').innerText;
+      return document.getElementById('notebook_name') ? document.getElementById('notebook_name').innerText : null;
    }
 
    initObservers() {
@@ -74,7 +74,7 @@ class Page {
                }
                this.removeNotifyIndicator(terminatedCell.element);
                const runtime = this.msToTime(new Date() - terminatedCell.startTime);
-               chrome.runtime.sendMessage({event: 'cell-terminated', runtime});
+               chrome.runtime.sendMessage({ event: 'cell-terminated', runtime });
                terminatedCell.observer.disconnect();
             }
          }
@@ -143,12 +143,12 @@ class Page {
       wrapper.insertAdjacentHTML('beforeend', this.getNotifyIndicator());
    }
 
-   removeNotifyIndicator(selectedCell=this.selectedCell) {
+   removeNotifyIndicator(selectedCell = this.selectedCell) {
       const child = selectedCell.getElementsByClassName('prompt input_prompt')[0];
       const parent = selectedCell.getElementsByClassName('prompt_container')[0];
       const indicator = selectedCell.getElementsByClassName('jupyter-notifier-bell-indicator')[0];
       const indicatorWrapper = selectedCell.getElementsByClassName('jupyter-notifier-icon-identifier-wrapper')[0];
-   
+
       indicator.remove();
       parent.insertBefore(child, indicatorWrapper);
       indicatorWrapper.remove();
@@ -180,16 +180,15 @@ class Page {
 
       return hours + ':' + minutes + ':' + seconds;
    }
-   
 }
 
 function main() {
    if (!Page.isJupyterNotebook()) {
       return;
    }
+   console.log("Current tab is a jupyter notebook");
    const currentPage = new Page();
    currentPage.initObservers();
 }
 
 main();
-
