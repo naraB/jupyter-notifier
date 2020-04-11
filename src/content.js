@@ -69,6 +69,7 @@ class Page {
                const terminatedCell = this.runningCellQueue.shift();
                if (this.notifyCells.includes(terminatedCell.element)) {
                   this.notifyCells.splice(this.notifyCells.indexOf(terminatedCell.element), 1);
+                  this.toggleIcon();
                   // Next cell runs after completion of previous
                   if (this.runningCellQueue[0]) {
                      this.runningCellQueue[0].startTime = new Date();
