@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Jupyter Notifier",
-    "description": "",
+    "description": "Notifies you when code cells terminate.",
     "version": "0.0.1",
     "permissions": [
         "storage",
