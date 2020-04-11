@@ -115,7 +115,7 @@ class Page {
    }
 
    toggleIcon() {
-      if (!this.isCodeCell()) {
+      if(!this.isCodeCell()) {
          return;
       }
       const notifyIcon = document.getElementById('jupyter-notifier-icon');
@@ -147,7 +147,7 @@ class Page {
    }
 
    isCodeCell() {
-      return this.selectedCell.className.includes('code_cell');
+      return this.selectedCell.className.includes('cell code_cell');
    }
 
    getSelectedCell() {
