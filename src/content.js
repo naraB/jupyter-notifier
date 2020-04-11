@@ -54,7 +54,6 @@ class Page {
             if (target.className && target.className.includes('running') && !this.runningCellQueue.some(cell => cell.element === target) && this.notifyCells.includes(target)) {
                const terminationObserver = this.initTerminationCellObserver(target);
                const runningCell = { element: target, startTime: new Date(), observer: terminationObserver };
-               console.log("cell is running", runningCell);
                this.runningCellQueue.push(runningCell);
             }
          }
