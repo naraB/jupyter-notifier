@@ -31,10 +31,9 @@
         "persistent": false
     },
     "icons": {
-        "16": "./assets/icons/pngs/baseline_notifications_black_18dp.png",
-        "48": "./assets/icons/pngs/baseline_notifications_black_48dp.png",
-        "128": "./assets/icons/pngs/baseline_notifications_black_48dp.png"
-
+        "16": "./assets/icons/bell-48px.png",
+        "48": "./assets/icons/bell-48px.png",
+        "128": "./assets/icons/bell-128px.png"
     }
     
 }
