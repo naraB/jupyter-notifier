@@ -8,7 +8,7 @@ class Background {
         const value = new Promise((resolve, reject) => {
             chrome.storage.sync.get([key], (value) => resolve(value));
         });
-        return await value;
+        return (await value)[key];
     }
 
     onInstalledListener() {
@@ -18,7 +18,7 @@ class Background {
     }
 
     onMessageListener() {
-        chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
             if (request.event === 'play-audio') {
                 this.sound.play();
@@ -29,8 +29,14 @@ class Background {
                 return;
             }
             if (request.event === 'cell-terminated') {
-                this.sound.play();
-                this.showNotification(request.runtime);
+                const notifySound = await this.getValueFromStorage('notifySound');
+                const notifyMessage = await this.getValueFromStorage('notifyMessage');
+                if (notifySound) {
+                    this.sound.play();
+                }
+                if (notifyMessage) {
+                    this.showNotification(request.runtime);
+                }
             }
         }
         );
