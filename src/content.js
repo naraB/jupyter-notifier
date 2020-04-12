@@ -6,8 +6,7 @@ class Page {
 
    constructor() {
       this.codeCells = this.getInitialCodeCells();
-      this.selectedCell = this.getSelectedCell();
-      this.toggleButton();
+      this.setSelectedCell();
    }
 
    static isJupyterNotebook() {
@@ -103,8 +102,6 @@ class Page {
       }
       if (!codeCell) {
          document.getElementById('jupyter-notifier-btn').className += ' disabled';
-         // document.getElementById('jupyter-notifier-btn').remove();
-         // document.getElementById('jupyter-notifier-btn-wrapper').remove();
       } else {
          document.getElementById('jupyter-notifier-btn').classList.remove('disabled');
       }
@@ -129,7 +126,7 @@ class Page {
    addNotifyEventListener() {
       document.getElementById('jupyter-notifier-btn').addEventListener('click', (e) => {
          const selectedCells = this.getSelectedCells();
-         if (!!selectedCells) {
+         if (selectedCells.length >= 1) {
             this.handleMultipleSelection(selectedCells);
          } else {
             this.handleSingleSelection(this.selectedCell);
@@ -169,8 +166,20 @@ class Page {
       return selectedCell.className.includes('cell code_cell');
    }
 
+   setSelectedCell() {
+      const timer = setInterval(() => {
+         console.log('Hello');
+         const selectedCell = Array.from(document.getElementsByClassName('selected'))[0];
+         console.log(selectedCell);
+         if (selectedCell) {
+            clearTimeout(timer);
+            this.selectedCell = selectedCell;
+            this.toggleButton();
+         }
+      }, 150);
+   }
+
    getSelectedCell() {
-      console.log("get selectec cell", document.getElementsByClassName('selected'));
       return Array.from(document.getElementsByClassName('selected'))[0];
    }
 
