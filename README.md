@@ -1,6 +1,6 @@
 ![logo](./images/logo.png)
 ## Jupyter Notifier
-**Jupyter Notifier** is a Google Chrome extension that notifies you when code cells terminate.
+**Jupyter Notifier** is a browser extension that notifies you when code cells terminate.
 
 ## Description
 On every Jupyter Notebook environment, Jupyter Notifier allows you to select specific cells for notification. For this, Jupyter Notifier injects a button ![bell](./src/assets/icons/notifications-black-24dp.svg) into your notebook. You can get notified with a sound, a message, or both when code cells terminate. 
