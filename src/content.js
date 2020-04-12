@@ -91,7 +91,6 @@ class Page {
    injectButton() {
       const toolbar = document.getElementById('maintoolbar-container');
       toolbar.insertAdjacentHTML('beforeend', this.getNotifyButton());
-      this.addNotifyEventListener();
    }
 
    toggleButton() {
@@ -99,6 +98,7 @@ class Page {
       const buttonInjected = !!document.getElementById('jupyter-notifier-btn-wrapper');
       if (!buttonInjected) {
          this.injectButton();
+         this.addNotifyEventListener();
       }
       if (!codeCell) {
          document.getElementById('jupyter-notifier-btn').className += ' disabled';
@@ -107,16 +107,12 @@ class Page {
       }
    }
 
-   selectedCellContainsNotifyIndicator() {
-      return !!this.selectedCell.getElementsByClassName('jupyter-notifier-bell-indicator')[0];
-   }
-
    toggleIcon() {
       if (!this.isCodeCell(this.selectedCell)) {
          return;
       }
       const notifyIcon = document.getElementById('jupyter-notifier-icon');
-      if (this.isSelectedCellNotified(this.selectedCell)) {
+      if (this.isCellNotified(this.selectedCell)) {
          notifyIcon.className = 'fa fa-bell';
       } else {
          notifyIcon.className = 'fa fa-bell-slash';
@@ -148,7 +144,7 @@ class Page {
       if (!this.isCodeCell(selectedCell)) {
          return;
       }
-      if (this.isSelectedCellNotified(selectedCell)) {
+      if (this.isCellNotified(selectedCell)) {
          this.notifyCells.splice(this.notifyCells.indexOf(selectedCell), 1);
          this.removeNotifyIndicator(selectedCell);
       } else {
@@ -158,7 +154,7 @@ class Page {
       this.toggleIcon();
    }
 
-   isSelectedCellNotified(cell) {
+   isCellNotified(cell) {
       return this.notifyCells.includes(cell);
    }
 
@@ -177,6 +173,7 @@ class Page {
             this.toggleButton();
          }
       }, 150);
+      console.log("done");
    }
 
    getSelectedCell() {
@@ -184,7 +181,7 @@ class Page {
    }
 
    addNotifyIndicator(selectedCell) {
-      const child = selectedCell.getElementsByClassName('prompt input_prompt')[0];
+      const target = selectedCell.getElementsByClassName('prompt input_prompt')[0];
       const parent = selectedCell.getElementsByClassName('prompt_container')[0];
       const wrapper = document.createElement('div');
 
@@ -194,8 +191,8 @@ class Page {
       wrapper.style.flexDirection = 'column';
       wrapper.style.alignItems = 'center';
 
-      parent.replaceChild(wrapper, child);
-      wrapper.appendChild(child);
+      parent.replaceChild(wrapper, target);
+      wrapper.appendChild(target);
       wrapper.insertAdjacentHTML('beforeend', this.getNotifyIndicator());
    }
 
