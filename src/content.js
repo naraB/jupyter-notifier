@@ -11,11 +11,7 @@ class Page {
    }
 
    static isJupyterNotebook() {
-      return document.title ===  (Page.getNotebookName() + ' - ' + 'Jupyter Notebook');
-   }
-
-   static getNotebookName() {
-      return document.getElementById('notebook_name') ? document.getElementById('notebook_name').innerText : null;
+      return !!document.getElementById('notebook_panel') && !!document.getElementById('notebook') && !!document.getElementById('ipython-main-app');
    }
 
    initObservers() {
@@ -41,6 +37,7 @@ class Page {
             const target = mutation.target;
             if (target.className && target.className.includes('selected') && !target.className.includes('unselected') && this.selectedCell !== target) {
                this.selectedCell = target;
+               console.log(target);
                this.toggleButton();
                this.toggleIcon();
             }
@@ -69,7 +66,7 @@ class Page {
                const terminatedCell = this.runningCellQueue.shift();
                if (this.notifyCells.includes(terminatedCell.element)) {
                   this.notifyCells.splice(this.notifyCells.indexOf(terminatedCell.element), 1);
-                  if(this.selectedCell === terminatedCell.element) {
+                  if (this.selectedCell === terminatedCell.element) {
                      this.toggleIcon();
                   }
                   // Next cell runs after completion of previous
@@ -99,7 +96,7 @@ class Page {
    }
 
    toggleButton() {
-      const codeCell = this.isCodeCell();
+      const codeCell = this.isCodeCell(this.selectedCell);
       const buttonInjected = !!document.getElementById('jupyter-notifier-btn-wrapper');
       if (!buttonInjected) {
          this.injectButton();
@@ -118,11 +115,11 @@ class Page {
    }
 
    toggleIcon() {
-      if(!this.isCodeCell()) {
+      if (!this.isCodeCell(this.selectedCell)) {
          return;
       }
       const notifyIcon = document.getElementById('jupyter-notifier-icon');
-      if (this.isSelectedCellNotified()) {
+      if (this.isSelectedCellNotified(this.selectedCell)) {
          notifyIcon.className = 'fa fa-bell';
       } else {
          notifyIcon.className = 'fa fa-bell-slash';
@@ -131,35 +128,55 @@ class Page {
 
    addNotifyEventListener() {
       document.getElementById('jupyter-notifier-btn').addEventListener('click', (e) => {
-         if(!this.isCodeCell()) {
-            return;
-         }
-         if (this.isSelectedCellNotified()) {
-            this.notifyCells.splice(this.notifyCells.indexOf(this.selectedCell), 1);
-            this.removeNotifyIndicator();
+         const selectedCells = this.getSelectedCells();
+         if (!!selectedCells) {
+            this.handleMultipleSelection(selectedCells);
          } else {
-            this.notifyCells.push(this.selectedCell);
-            this.addNotifyIndicator();
+            this.handleSingleSelection(this.selectedCell);
          }
-         this.toggleIcon();
       });
    }
 
-   isSelectedCellNotified() {
-      return this.notifyCells.includes(this.selectedCell);
+   getSelectedCells() {
+      return Array.from(document.getElementsByClassName('jupyter-soft-selected'));
    }
 
-   isCodeCell() {
-      return this.selectedCell.className.includes('cell code_cell');
+   handleMultipleSelection(selectedCells) {
+      for (let selectedCell of selectedCells) {
+         this.handleSingleSelection(selectedCell);
+      }
+   }
+
+   handleSingleSelection(selectedCell) {
+      if (!this.isCodeCell(selectedCell)) {
+         return;
+      }
+      if (this.isSelectedCellNotified(selectedCell)) {
+         this.notifyCells.splice(this.notifyCells.indexOf(selectedCell), 1);
+         this.removeNotifyIndicator(selectedCell);
+      } else {
+         this.notifyCells.push(selectedCell);
+         this.addNotifyIndicator(selectedCell);
+      }
+      this.toggleIcon();
+   }
+
+   isSelectedCellNotified(cell) {
+      return this.notifyCells.includes(cell);
+   }
+
+   isCodeCell(selectedCell) {
+      return selectedCell.className.includes('cell code_cell');
    }
 
    getSelectedCell() {
+      console.log("get selectec cell", document.getElementsByClassName('selected'));
       return Array.from(document.getElementsByClassName('selected'))[0];
    }
 
-   addNotifyIndicator() {
-      const child = this.selectedCell.getElementsByClassName('prompt input_prompt')[0];
-      const parent = this.selectedCell.getElementsByClassName('prompt_container')[0];
+   addNotifyIndicator(selectedCell) {
+      const child = selectedCell.getElementsByClassName('prompt input_prompt')[0];
+      const parent = selectedCell.getElementsByClassName('prompt_container')[0];
       const wrapper = document.createElement('div');
 
       // Add styles
@@ -173,7 +190,7 @@ class Page {
       wrapper.insertAdjacentHTML('beforeend', this.getNotifyIndicator());
    }
 
-   removeNotifyIndicator(selectedCell = this.selectedCell) {
+   removeNotifyIndicator(selectedCell) {
       const child = selectedCell.getElementsByClassName('prompt input_prompt')[0];
       const parent = selectedCell.getElementsByClassName('prompt_container')[0];
       const indicator = selectedCell.getElementsByClassName('jupyter-notifier-bell-indicator')[0];
@@ -213,12 +230,11 @@ class Page {
 }
 
 function main() {
-   if (!Page.isJupyterNotebook()) {
-      return;
+   if (Page.isJupyterNotebook()) {
+      console.log("Current tab is a jupyter notebook");
+      const currentPage = new Page();
+      currentPage.initObservers();
    }
-   console.log("Current tab is a jupyter notebook");
-   const currentPage = new Page();
-   currentPage.initObservers();
 }
 
 main();
