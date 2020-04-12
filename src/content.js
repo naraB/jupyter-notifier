@@ -36,7 +36,6 @@ class Page {
             const target = mutation.target;
             if (target.className && target.className.includes('selected') && !target.className.includes('unselected') && this.selectedCell !== target) {
                this.selectedCell = target;
-               console.log(target);
                this.toggleButton();
                this.toggleIcon();
             }
@@ -164,16 +163,13 @@ class Page {
 
    setSelectedCell() {
       const timer = setInterval(() => {
-         console.log('Hello');
          const selectedCell = Array.from(document.getElementsByClassName('selected'))[0];
-         console.log(selectedCell);
          if (selectedCell) {
             clearTimeout(timer);
             this.selectedCell = selectedCell;
             this.toggleButton();
          }
       }, 150);
-      console.log("done");
    }
 
    getSelectedCell() {
