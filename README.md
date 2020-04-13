@@ -8,7 +8,7 @@ On every Jupyter Notebook environment, Jupyter Notifier allows you to select spe
 With Jupyter Notifier, you won't be repeatedly checking whether your cell has finished running.
 
 ## Installation
-**Jupyter Notifier** is currently in pending review and will be available on the Chrome Web Store soon.
+**Jupyter Notifier** can be installed through the [Chrome Web Store](https://chrome.google.com/webstore/detail/chjgkagmoifencbeboghhaefjknfogib/publish-accepted?authuser=0&hl=en) and will be available for Firefox soon. 
 
 ## Screenshots
 ![ui](./images/ui.png)
